@@ -1,0 +1,94 @@
+package com.movienchill.userservice.restController;
+
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import model.action.ActionBasic;
+import model.message.CustomMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import service.SenderService;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+@Slf4j
+@CrossOrigin
+@RestController
+@RequestMapping(Router.URL_USERS)
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @ApiOperation(value = "", nickname = "getAllUsers")
+    @GetMapping()
+    public List<User> getAllUsers() {
+        List<User> users = null;
+        try {
+            return userService.findAll();
+        } catch (Exception e) {
+            log.error("Error when retrieving all users : {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @ApiOperation(value = "", nickname = "getUserByid")
+    @GetMapping(value = "/{id}")
+    public User getUserByid(@PathVariable("id") Long id) {
+        User userDto = null;
+        try {
+            return userService.findById(id);
+        } catch (Exception e) {
+            log.error("Error when retrieving user[{}]", e.getMessage());
+            return null;
+        }
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@RequestBody User user) {
+        try {
+            return userService.update(user);
+        } catch (Exception e) {
+            log.error("Error when login user : {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Boolean deleteUser(@PathVariable Long id) {
+        try {
+            return userService.delete(id);
+        } catch (Exception e) {
+            log.error("An error occurred when deleting the user : {}", e.getMessage());
+            return Boolean.FALSE;
+        }
+    }
+
+    @ApiOperation(value = "", nickname = "register")
+    @PostMapping(Router.REGISTER)
+    public User register(@RequestBody @Validated User userDto) {
+        try {
+            if(userService.register(userDto)) {
+                return userDto;
+            }
+        } catch (Exception e) {
+            log.error("Error when registered the user : {}", e.getMessage());
+        }
+
+        return null;
+    }
+
+    @ApiOperation(value = "", nickname = "login")
+    @PutMapping(Router.LOGIN)
+    public User login(@RequestBody User user) {
+        try {
+            return userService.login(user.getLogin(), user.getPassword());
+        } catch (Exception e) {
+            log.error("Error when login user : {}", e.getMessage());
+            return null;
+        }
+    }
+}
