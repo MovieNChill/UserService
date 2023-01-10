@@ -41,7 +41,7 @@ public class UserService {
         return null;
     }
 
-    public User pseudo(String pseudo, String password) {
+    public User login(String pseudo, String password) {
         try {
             User user = userDAO.findByPseudoAndPassword(pseudo, password);
             if (user != null) {
@@ -57,7 +57,7 @@ public class UserService {
         return null;
     }
 
-    public Boolean register(User user, String callback) {
+    public Boolean register(User user) {
         if (save(user)) {
             return Boolean.TRUE;
         }

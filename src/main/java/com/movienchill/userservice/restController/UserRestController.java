@@ -1,32 +1,37 @@
 package com.movienchill.userservice.restController;
 
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import model.action.ActionBasic;
-import model.message.CustomMessage;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import service.SenderService;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import com.movienchill.userservice.constant.Router;
+import com.movienchill.userservice.model.User;
+import com.movienchill.userservice.service.UserService;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping(Router.URL_USERS)
-public class UserController {
-
+public class UserRestController {
     @Autowired
     private UserService userService;
 
     @ApiOperation(value = "", nickname = "getAllUsers")
     @GetMapping()
     public List<User> getAllUsers() {
-        List<User> users = null;
         try {
             return userService.findAll();
         } catch (Exception e) {
@@ -69,10 +74,10 @@ public class UserController {
 
     @ApiOperation(value = "", nickname = "register")
     @PostMapping(Router.REGISTER)
-    public User register(@RequestBody @Validated User userDto) {
+    public User register(@RequestBody User user) {
         try {
-            if(userService.register(userDto)) {
-                return userDto;
+            if (userService.register(user)) {
+                return user;
             }
         } catch (Exception e) {
             log.error("Error when registered the user : {}", e.getMessage());
@@ -85,7 +90,7 @@ public class UserController {
     @PutMapping(Router.LOGIN)
     public User login(@RequestBody User user) {
         try {
-            return userService.login(user.getLogin(), user.getPassword());
+            return userService.login(user.getPseudo(), user.getPassword());
         } catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
             return null;
