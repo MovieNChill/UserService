@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Pattern;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "pseudo", "email" }) })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
