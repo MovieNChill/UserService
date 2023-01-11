@@ -4,22 +4,21 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.movienchill.userservice.UserDTO;
 import com.movienchill.userservice.constant.Router;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.service.UserService;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
+@Data
+class Login {
+    String login;
+    String password;
+}
 
 @Slf4j
 @CrossOrigin
@@ -29,7 +28,6 @@ public class UserRestController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "", nickname = "getAllUsers")
     @GetMapping()
     public List<User> getAllUsers() {
         try {
@@ -40,7 +38,6 @@ public class UserRestController {
         }
     }
 
-    @ApiOperation(value = "", nickname = "getUserByid")
     @GetMapping(value = "/{id}")
     public User getUserByid(@PathVariable("id") Long id) {
         User userDto = null;
@@ -72,9 +69,8 @@ public class UserRestController {
         }
     }
 
-    @ApiOperation(value = "", nickname = "register")
     @PostMapping(Router.REGISTER)
-    public User register(@RequestBody User user) {
+    public User register(@RequestBody @Validated User user) {
         try {
             if (userService.register(user)) {
                 return user;
@@ -86,11 +82,10 @@ public class UserRestController {
         return null;
     }
 
-    @ApiOperation(value = "", nickname = "login")
     @PutMapping(Router.LOGIN)
-    public User login(@RequestBody User user) {
+    public User login(@RequestBody Login login) {
         try {
-            return userService.login(user.getPseudo(), user.getPassword());
+            return userService.login(login.getLogin(), login.getPassword());
         } catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
             return null;

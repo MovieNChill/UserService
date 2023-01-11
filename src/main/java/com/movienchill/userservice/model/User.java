@@ -17,17 +17,17 @@ public class User {
     private Long id;
 
     @NotBlank(message = "pseudo is mandatory")
-    @Column(name = "pseudo")
+    @Column(name = "pseudo", unique = true)
     private String pseudo;
 
     @NotBlank(message = "email is mandatory")
     @Email(message = "email should be valid")
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @NotBlank(message = "password is mandatory")
     @Size(min = 8, message = "password should be at least 8 characters")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=])(?=\\S+$).{4,}$", message = "password should contain at least one digit, one lower case, one upper case, one special character and no whitespace")
     @Column(name = "password")
     private String password;
 }

@@ -8,4 +8,6 @@ import com.movienchill.userservice.model.User;
 @Repository
 public interface UserDAO extends JpaRepository<User, Long> {
     User findByPseudoAndPassword(String pseudo, String password);
+
+    User findByEmailAndPassword(String email, String password);
 }

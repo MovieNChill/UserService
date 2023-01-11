@@ -41,19 +41,22 @@ public class UserService {
         return null;
     }
 
-    public User login(String pseudo, String password) {
+    public User login(String login, String password) {
         try {
-            User user = userDAO.findByPseudoAndPassword(pseudo, password);
+            User user = userDAO.findByPseudoAndPassword(login, password);
             if (user != null) {
                 // TODO Generate Token from Auth Service
                 return user;
-            } else {
-                log.info("The user does not exist");
             }
+            user = userDAO.findByEmailAndPassword(login, password);
+            if (user != null) {
+                // TODO Generate Token from Auth Service
+                return user;
+            }
+            log.info("The user does not exist");
         } catch (Exception e) {
             log.error("Error when logging user : {} ", e.getMessage());
         }
-
         return null;
     }
 
