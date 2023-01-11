@@ -37,7 +37,6 @@ public class UserService {
         } catch (Exception e) {
             log.error("Error when finding user[{}] : {} ", id, e.getMessage());
         }
-
         return null;
     }
 
@@ -56,16 +55,13 @@ public class UserService {
             log.info("The user does not exist");
         } catch (Exception e) {
             log.error("Error when logging user : {} ", e.getMessage());
+            throw e;
         }
         return null;
     }
 
-    public Boolean register(User user) {
-        if (save(user)) {
-            return Boolean.TRUE;
-        }
-        log.error("An error occured during the creation of the user");
-        return Boolean.FALSE;
+    public void register(User user) {
+        save(user);
     }
 
     public Boolean delete(Long id) {
@@ -81,10 +77,11 @@ public class UserService {
     public User update(User user) {
         if (userDAO.findById(user.getId()).isPresent()) {
             save(user);
+            return user;
         } else {
             log.info("The user does not exist");
         }
-        return user;
+        return null;
     }
 
     private Boolean save(User user) {
@@ -93,7 +90,7 @@ public class UserService {
             return Boolean.TRUE;
         } catch (Exception e) {
             log.error("Error when saving entity to database : {}", e.getMessage());
-            return Boolean.FALSE;
+            throw e;
         }
     }
 }

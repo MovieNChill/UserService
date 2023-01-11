@@ -3,6 +3,8 @@ package com.movienchill.userservice.restController;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,66 +31,81 @@ public class UserRestController {
     private UserService userService;
 
     @GetMapping()
-    public List<User> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         try {
-            return userService.findAll();
+            return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error when retrieving all users : {}", e.getMessage());
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(value = "/{id}")
-    public User getUserByid(@PathVariable("id") Long id) {
+    public ResponseEntity<User> getUserByid(@PathVariable("id") Long id) {
         User userDto = null;
         try {
-            return userService.findById(id);
+            User user = userService.findById(id);
+            if (user != null) {
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             log.error("Error when retrieving user[{}]", e.getMessage());
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping()
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         try {
-            return userService.update(user);
+            User updatedUser = userService.update(user);
+            if (updatedUser != null)
+                return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            log.error("Error when login user : {}", e.getMessage());
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}")
-    public Boolean deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteUser(@PathVariable Long id) {
         try {
-            return userService.delete(id);
+            Boolean deleted = userService.delete(id);
+            if (deleted)
+                return new ResponseEntity<>(deleted, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             log.error("An error occurred when deleting the user : {}", e.getMessage());
-            return Boolean.FALSE;
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping(Router.REGISTER)
-    public User register(@RequestBody @Validated User user) {
+    public ResponseEntity<User> register(@RequestBody @Validated User user) {
         try {
-            if (userService.register(user)) {
-                return user;
-            }
+            userService.register(user);
+            return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error when registered the user : {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
-        return null;
     }
 
     @PutMapping(Router.LOGIN)
-    public User login(@RequestBody Login login) {
+    public ResponseEntity<User> login(@RequestBody Login login) {
         try {
-            return userService.login(login.getLogin(), login.getPassword());
+            User user = userService.login(login.getLogin(), login.getPassword());
+            if (user != null)
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+
         } catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
