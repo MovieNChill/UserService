@@ -49,7 +49,7 @@ public class UserRestController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping()
     public User updateUser(@RequestBody User user) {
         try {
             return userService.update(user);
