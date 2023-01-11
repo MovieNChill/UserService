@@ -48,7 +48,7 @@ public class UserRestController {
             if (user != null) {
                 return new ResponseEntity<>(user, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             log.error("Error when retrieving user[{}]", e.getMessage());
@@ -63,7 +63,7 @@ public class UserRestController {
             if (updatedUser != null)
                 return new ResponseEntity<>(updatedUser, HttpStatus.OK);
             else
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -74,9 +74,9 @@ public class UserRestController {
         try {
             Boolean deleted = userService.delete(id);
             if (deleted)
-                return new ResponseEntity<>(deleted, HttpStatus.OK);
-            else
                 return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
+            else
+                return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("An error occurred when deleting the user : {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -101,7 +101,7 @@ public class UserRestController {
             if (user != null)
                 return new ResponseEntity<>(user, HttpStatus.OK);
             else
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
