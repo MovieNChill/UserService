@@ -13,7 +13,7 @@ import com.movienchill.userservice.exception.EmailAlreadyExistsException;
 import com.movienchill.userservice.exception.PasswordInvalidException;
 import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
 import com.movienchill.userservice.lib.CustomException;
-import com.movienchill.userservice.lib.ErrorResponse;
+import com.movienchill.userservice.lib.CustomResponse;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.service.UserService;
 
@@ -88,14 +88,13 @@ public class UserRestController {
     }
 
     @PostMapping(Router.REGISTER)
-    public ResponseEntity<ErrorResponse<User>> register(@RequestBody User user) {
+    public ResponseEntity<CustomResponse<User>> register(@RequestBody User user) {
         try {
             userService.register(user);
-            return new ResponseEntity<>(new ErrorResponse<>(null, user), HttpStatus.OK);
+            return new ResponseEntity<>(new CustomResponse<>(null, user), HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(new ErrorResponse<>(e, null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new CustomResponse<>(e, null), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.error("Error when registering user : {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
