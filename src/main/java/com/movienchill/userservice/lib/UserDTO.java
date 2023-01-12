@@ -1,4 +1,4 @@
-package com.movienchill.userservice;
+package com.movienchill.userservice.lib;
 
 import lombok.Data;
 

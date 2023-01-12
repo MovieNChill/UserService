@@ -1,8 +1,13 @@
 package com.movienchill.userservice.service;
 
+import com.movienchill.userservice.exception.EmailAlreadyExistsException;
+import com.movienchill.userservice.exception.PasswordInvalidException;
+import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.repository.UserDAO;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +65,18 @@ public class UserService {
         return null;
     }
 
-    public void register(User user) {
-        save(user);
+    public void register(User user)
+            throws EmailAlreadyExistsException, PseudoAlreadyExistsException, PasswordInvalidException {
+        if (userDAO.findByEmail(user.getEmail()) != null) {
+            throw new EmailAlreadyExistsException();
+        }
+        if (userDAO.findByPseudo(user.getPseudo()) != null) {
+            throw new PseudoAlreadyExistsException();
+        }
+        if (!user.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=])(?=\\S+$).{4,}$")) {
+            throw new PasswordInvalidException();
+        }
+        this.save(user);
     }
 
     public Boolean delete(Long id) {
@@ -89,7 +104,7 @@ public class UserService {
             userDAO.save(user);
             return Boolean.TRUE;
         } catch (Exception e) {
-            log.error("Error when saving entity to database : {}", e.getMessage());
+            log.error("Error when saving user : {} ", e.getMessage());
             throw e;
         }
     }
