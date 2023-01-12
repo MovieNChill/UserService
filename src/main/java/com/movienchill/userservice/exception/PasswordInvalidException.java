@@ -7,6 +7,6 @@ public class PasswordInvalidException extends CustomException {
 
     public PasswordInvalidException() {
         super("The password should contain at least one digit, one lower case, one upper case, one special character and no whitespace",
-                "password_invalid");
+                "invalid_password");
     }
 }
