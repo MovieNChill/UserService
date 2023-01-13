@@ -10,17 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import com.movienchill.userservice.constant.Router;
 import com.movienchill.userservice.lib.CustomException;
 import com.movienchill.userservice.lib.CustomResponse;
+import com.movienchill.userservice.lib.LoginDTO;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.service.UserService;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
-@Data
-class Login {
-    String login;
-    String password;
-}
 
 @Slf4j
 @CrossOrigin
@@ -96,7 +91,7 @@ public class UserRestController {
     }
 
     @PostMapping(Router.LOGIN)
-    public ResponseEntity<CustomResponse<User>> login(@RequestBody Login login) {
+    public ResponseEntity<CustomResponse<User>> login(@RequestBody LoginDTO login) {
         try {
             log.info(login.getLogin());
             User user = userService.login(login.getLogin(), login.getPassword());
@@ -107,7 +102,7 @@ public class UserRestController {
 
         } catch (CustomException e) {
             return new ResponseEntity<>(new CustomResponse<>(e, null), HttpStatus.BAD_REQUEST);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

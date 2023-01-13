@@ -4,6 +4,7 @@ import com.movienchill.userservice.exception.EmailAlreadyExistsException;
 import com.movienchill.userservice.exception.IncorrectPasswordException;
 import com.movienchill.userservice.exception.InvalidPasswordException;
 import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
+import com.movienchill.userservice.exception.UserNotFoundException;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.repository.UserDAO;
 
@@ -21,8 +22,6 @@ public class UserService {
 
     @Autowired
     private UserDAO userDAO;
-
-
 
     public List<User> findAll() {
         try {
@@ -46,7 +45,8 @@ public class UserService {
         }
         return null;
     }
-    private User findUserToLogin(String login){
+
+    private User findUserToLogin(String login) {
         User user = userDAO.findByPseudo(login);
         if (user != null) {
             return user;
@@ -58,19 +58,18 @@ public class UserService {
         }
         return null;
     }
-    public User login(String login, String clearPassword) throws IncorrectPasswordException {
+
+    public User login(String login, String clearPassword) throws IncorrectPasswordException, UserNotFoundException {
         try {
             User user = findUserToLogin(login);
-            log.info(user.getEmail());
-            if(user == null ){
-                log.info("The user does not exist");
-                return null;
-            }else{
+            if (user == null) {
+                throw new UserNotFoundException();
+            } else {
                 // TODO Generate Token from Auth Service
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                if(passwordEncoder.matches(clearPassword, user.getPassword())){
+                if (passwordEncoder.matches(clearPassword, user.getPassword())) {
                     return user;
-                }else{
+                } else {
                     throw new IncorrectPasswordException();
                 }
             }
@@ -91,7 +90,7 @@ public class UserService {
         }
         if (!user.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=])(?=\\S+$).{4,}$")) {
             throw new InvalidPasswordException();
-        }else{
+        } else {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(hashedPassword);
