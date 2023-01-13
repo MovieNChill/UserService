@@ -1,17 +1,15 @@
 package com.movienchill.userservice.service;
 
 import com.movienchill.userservice.exception.EmailAlreadyExistsException;
-import com.movienchill.userservice.exception.PasswordInvalidException;
+import com.movienchill.userservice.exception.IncorrectPasswordException;
+import com.movienchill.userservice.exception.InvalidPasswordException;
 import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.repository.UserDAO;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,29 +46,43 @@ public class UserService {
         }
         return null;
     }
+    private User findUserToLogin(String login){
+        User user = userDAO.findByPseudo(login);
+        if (user != null) {
+            return user;
+        }
+        user = userDAO.findByEmail(login);
+        if (user != null) {
 
-    public User login(String login, String password) {
+            return user;
+        }
+        return null;
+    }
+    public User login(String login, String clearPassword) throws IncorrectPasswordException {
         try {
-            User user = userDAO.findByPseudoAndPassword(login, password);
-            if (user != null) {
+            User user = findUserToLogin(login);
+            log.info(user.getEmail());
+            if(user == null ){
+                log.info("The user does not exist");
+                return null;
+            }else{
                 // TODO Generate Token from Auth Service
-                return user;
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                if(passwordEncoder.matches(clearPassword, user.getPassword())){
+                    return user;
+                }else{
+                    throw new IncorrectPasswordException();
+                }
             }
-            user = userDAO.findByEmailAndPassword(login, password);
-            if (user != null) {
-                // TODO Generate Token from Auth Service
-                return user;
-            }
-            log.info("The user does not exist");
+
         } catch (Exception e) {
             log.error("Error when logging user : {} ", e.getMessage());
             throw e;
         }
-        return null;
     }
 
     public void register(User user)
-            throws EmailAlreadyExistsException, PseudoAlreadyExistsException, PasswordInvalidException {
+            throws EmailAlreadyExistsException, PseudoAlreadyExistsException, InvalidPasswordException {
         if (userDAO.findByEmail(user.getEmail()) != null) {
             throw new EmailAlreadyExistsException();
         }
@@ -78,12 +90,12 @@ public class UserService {
             throw new PseudoAlreadyExistsException();
         }
         if (!user.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=])(?=\\S+$).{4,}$")) {
-            throw new PasswordInvalidException();
-        }/*else{
+            throw new InvalidPasswordException();
+        }else{
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(hashedPassword);
-        }*/
+        }
         this.save(user);
     }
 

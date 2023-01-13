@@ -5,13 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.movienchill.userservice.constant.Router;
-import com.movienchill.userservice.exception.EmailAlreadyExistsException;
-import com.movienchill.userservice.exception.PasswordInvalidException;
-import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
 import com.movienchill.userservice.lib.CustomException;
 import com.movienchill.userservice.lib.CustomResponse;
 import com.movienchill.userservice.model.User;
@@ -99,16 +95,19 @@ public class UserRestController {
         }
     }
 
-    @PutMapping(Router.LOGIN)
-    public ResponseEntity<User> login(@RequestBody Login login) {
+    @PostMapping(Router.LOGIN)
+    public ResponseEntity<CustomResponse<User>> login(@RequestBody Login login) {
         try {
+            log.info(login.getLogin());
             User user = userService.login(login.getLogin(), login.getPassword());
             if (user != null)
-                return new ResponseEntity<>(user, HttpStatus.OK);
+                return new ResponseEntity<>(new CustomResponse<>(null, user), HttpStatus.OK);
             else
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-        } catch (Exception e) {
+        } catch (CustomException e) {
+            return new ResponseEntity<>(new CustomResponse<>(e, null), HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
             log.error("Error when login user : {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
