@@ -18,9 +18,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@CrossOrigin
+
 @RestController
 @RequestMapping(Router.URL_USERS)
+@CrossOrigin
 public class UserRestController {
     @Autowired
     private UserService userService;
@@ -78,8 +79,9 @@ public class UserRestController {
         }
     }
 
-    @CrossOrigin
+
     @PostMapping(Router.REGISTER)
+    @CrossOrigin
     public ResponseEntity<CustomResponse<User>> register(@RequestBody User user) {
         try {
             userService.register(user);
@@ -91,8 +93,9 @@ public class UserRestController {
         }
     }
 
-    @CrossOrigin
+
     @PostMapping(Router.LOGIN)
+    @CrossOrigin
     public ResponseEntity<CustomResponse<User>> login(@RequestBody LoginDTO login) {
         try {
             log.info(login.getLogin());
