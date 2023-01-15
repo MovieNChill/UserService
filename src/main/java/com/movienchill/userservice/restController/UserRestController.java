@@ -18,7 +18,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping(Router.URL_USERS)
 public class UserRestController {
