@@ -5,7 +5,7 @@ env:
   JAVA_VERSION: 17
   AZURE_SUBSCRIPTION: 0917b8b7-c85b-4a76-9d2d-aed90d7d3b99
   SERVICE_NAME: api-movienchill
-  APP_NAME: userservice
+  APP_NAME: users
   ENV_DEV: false
 
 jobs:
