@@ -3,8 +3,8 @@ on: push
 env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
   JAVA_VERSION: 17
-  AZURE_SUBSCRIPTION: 0917b8b7-c85b-4a76-9d2d-aed90d7d3b99
-  SERVICE_NAME: api-movienchill
+  AZURE_SUBSCRIPTION: 99077d7f-6eb9-4902-9491-5ab8c9aaa3ce
+  SERVICE_NAME: movienchill-api
   APP_NAME: users
   ENV_DEV: false
 
