@@ -76,6 +76,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.2.14</version>
 		</dependency>
+		<!-- JSON -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20220924</version>
+		</dependency>
 		<!-- Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>

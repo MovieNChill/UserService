@@ -7,5 +7,6 @@ public class Router {
 
     /* OPTION */
     public static final String LOGIN = "/login";
+    public static final String GOOGLE = "/google";
     public static final String REGISTER = "/register";
 }

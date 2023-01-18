@@ -1,6 +1,7 @@
 package com.movienchill.userservice.restController;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -108,5 +109,18 @@ public class UserRestController {
             log.error("Error when login user : {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(Router.GOOGLE)
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<CustomResponse<User>>  googleAuth(@RequestBody Map<String, String> content) {
+        String token = content.get("token");
+        User user = userService.authGoogle(token);
+
+        if (user != null)
+            return new ResponseEntity<>(new CustomResponse<>(null, user), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
     }
 }

@@ -1,20 +1,20 @@
 package com.movienchill.userservice.service;
 
-import com.movienchill.userservice.exception.EmailAlreadyExistsException;
-import com.movienchill.userservice.exception.IncorrectPasswordException;
-import com.movienchill.userservice.exception.InvalidPasswordException;
-import com.movienchill.userservice.exception.PseudoAlreadyExistsException;
-import com.movienchill.userservice.exception.UserNotFoundException;
+import com.movienchill.userservice.exception.*;
+import com.movienchill.userservice.lib.UserDTO;
 import com.movienchill.userservice.model.User;
 import com.movienchill.userservice.repository.UserDAO;
 
+import com.movienchill.userservice.utils.WebService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -59,12 +59,53 @@ public class UserService {
         return null;
     }
 
-    public User login(String login, String clearPassword) throws IncorrectPasswordException, UserNotFoundException {
+
+    public User authGoogle(String token){
+        final String AUTH_GOOGLE_URL = "https://www.googleapis.com/oauth2/v3/userinfo?access_token=";
+        try {
+            String response = WebService.get(AUTH_GOOGLE_URL+token);
+            if(response == null){
+                return null;
+            }
+            JSONObject ob = new JSONObject(response);
+
+            String picture = ob.getString("picture");
+            String[] pictureSplit = picture.split(Pattern.quote("\\"));
+
+            User user = userDAO.findByEmail(ob.getString("email"));
+            if(user == null){
+                user = userDAO.findByPseudo(ob.getString("name"));
+                User userToCreate = new User();
+                if(user == null){
+                    userToCreate.setPseudo(ob.getString("name"));
+                }else{
+                    userToCreate.setPseudo(ob.getString("name")+" "+ob.getString("sub"));
+                }
+                userToCreate.setEmail(ob.getString("email"));
+                this.save(userToCreate);
+                user = userDAO.findByEmail(ob.getString("email"));
+                user.setPicture(pictureSplit[0]);
+                return user;
+            }else{
+
+                user.setPicture(pictureSplit[0]);
+                return user;
+            }
+        }catch (Exception e){
+            return null;
+        }
+
+
+    }
+    public User login(String login, String clearPassword) throws IncorrectPasswordException, UserNotFoundException, AuthGoogleException {
         try {
             User user = findUserToLogin(login);
             if (user == null) {
                 throw new UserNotFoundException();
-            } else {
+            } else if (user.getPassword() == null){
+                throw new AuthGoogleException();
+            }
+            else {
                 // TODO Generate Token from Auth Service
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 if (passwordEncoder.matches(clearPassword, user.getPassword())) {

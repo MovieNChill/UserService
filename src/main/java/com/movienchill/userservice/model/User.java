@@ -25,9 +25,11 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @NotBlank(message = "password is mandatory")
-    @Size(min = 8, message = "password should be at least 8 characters")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=*])(?=\\S+$).{4,}$", message = "password should contain at least one digit, one lower case, one upper case, one special character and no whitespace")
+   // @NotBlank(message = "password is mandatory")
+   // @Size(min = 8, message = "password should be at least 8 characters")
+   // @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[ç@#$%^&+=*])(?=\\S+$).{4,}$", message = "password should contain at least one digit, one lower case, one upper case, one special character and no whitespace")
     @Column(name = "password")
     private String password;
+
+    private String picture;
 }
