@@ -2,7 +2,7 @@ name: AzureSpringCloud
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
